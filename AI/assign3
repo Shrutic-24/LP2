@@ -1,0 +1,235 @@
+//Selection Sort
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void swap(int *xp,int *yp)
+{
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+
+void selectionsort(int arr[],int n)
+{
+    int i,j,min_idx;
+    for(i=0;i<n-1;i++)
+    {
+        min_idx=i;
+        for(j=i+1; j<n; j++)
+        if(arr[j]<arr[min_idx])
+        min_idx=j;
+        
+        swap(&arr[min_idx],&arr[i]);
+    }
+}
+
+void printArray(int arr[],int size){
+    int i;
+    for(int i=0;i<size;i++)
+    cout<<arr[i];
+    cout<<endl;
+}
+int main()
+{
+    cout<<"Enter no. of elements in array: ";
+    int n;
+    cin>>n;
+    int arr[n];
+    cout<<"Enter elements of array:";
+    for(int i=0;i<n;i++)
+    {
+        cin>>arr[n];
+    }
+    selectionsort(arr,n);
+    cout<<"Sorted array:";
+    printArray(arr,n);
+    return 0;
+}
+
+//Prims
+PRIMS CODE - 
+Assignment - 3
+#include <bits/stdc++.h>
+#include <iostream>
+using namespace std;
+
+void insertByEdges(vector<vector<pair<int, int>>> &graph, int n)
+{
+    int e;
+    cout << "Enter the number of edges: ";
+    cin >> e;
+    for (int i = 0; i < e; i++)
+    {
+        int a, b, wt;
+        cout << "Enter the edge " << i + 1 << ": ";
+        cin >> a >> b;
+        cout << "Enter the edge Weight : ";
+        cin >> wt;
+        graph[a].push_back({b, wt});
+        graph[b].push_back({a, wt});
+    }
+    // print adjacency list
+    for (int i = 0; i < n; i++)
+    {
+        cout << i << "->";
+        for (int j = 0; j < graph[i].size(); j++)
+        {
+            cout << "{" << graph[i][j].first << " , " << graph[i][j].second << "}";
+        }
+        cout << endl;
+    }
+}
+
+void primsMST(vector<vector<pair<int, int>>> &graph, vector<int> &visited, vector<pair<int, int>> &MST, int start)
+{
+    priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+    int sum = 0;
+    pq.push({0, {start, -1}});
+    while (!pq.empty())
+    {
+
+        int wt = pq.top().first;
+        int node = pq.top().second.first;
+        int parent = pq.top().second.second;
+        pq.pop();
+
+        if (visited[node] == 1)
+            continue;
+        visited[node] = 1;
+        if (parent != -1)
+        {
+            MST.push_back({parent, node});
+        }
+        sum += wt;
+        for (auto it : graph[node])
+        {
+            int currNode = it.first;
+            int currWt = it.second;
+            if (!visited[currNode])
+            {
+                pq.push({currWt, {currNode, node}});
+            }
+        }
+    };
+    cout << "The minimum sum of Wt's is: " << sum << "\n";
+}
+int main()
+{
+    int n;
+    cout << "Enter the number of vertices: ";
+    cin >> n;
+    vector<vector<pair<int, int>>> graph(n);
+    insertByEdges(graph, n);
+    vector<int> visited(n, 0);
+    vector<pair<int, int>> MST;
+    int start = 0;
+    cout << "Enter the start vertices : ";
+    cin >> start;
+    primsMST(graph, visited, MST, start);
+
+    cout << "Edges in MST are : ";
+    for (auto it : MST)
+    {
+        cout << "{" << it.first << " , " << it.second << "} ";
+    }
+    cout << "\n";
+}
+
+//Djikstra
+class Graph
+{
+
+    int nodes, edges;
+    vector<vector<pair<int, int>>> graph;
+
+public:
+    Graph(int nn, int ne)
+    {
+        nodes = nn;
+        edges = ne;
+        graph.resize(nodes);
+    }
+    void acceptgraph()
+    {
+        int src, dest, wt;
+        for (int i = 0; i < edges; i++)
+        {
+            cout << "Enter the source\n";
+            cin >> src;
+            cout << "Enter the destination\n";
+            cin >> dest;
+            cout << "Enter the weight\n";
+            cin >> wt;
+            graph[src].push_back({dest, wt});
+            graph[dest].push_back({src, wt});
+        }
+    }
+    void display_graph()
+    {
+        cout << "\nGraph is:";
+
+        for (int i = 0; i < nodes; i++)
+        {
+            cout << i << "->";
+            for (int j = 0; j < graph[i].size(); j++)
+            {
+                cout << "{" << graph[i][j].first << "," << graph[i][j].second << "} , ";
+            }
+            cout << endl;
+        }
+    }
+
+    void djikstras()
+    {
+        int src;
+        cout << "Enter the source node from which you need to find the shortest path\n";
+        cin >> src;
+
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, src});
+        vector<int> dist(nodes, INT_MAX);
+        dist[src] = 0;
+        while (!pq.empty())
+        {
+            int distance = pq.top().first;
+            int dest = pq.top().second;
+
+            pq.pop();
+
+            for (auto it : graph[dest])
+            {
+                int adjnode = it.first;
+                int edgewt = it.second;
+                if (distance + edgewt < dist[adjnode])
+                {
+                    dist[adjnode] = distance + edgewt;
+                    pq.push({dist[adjnode], adjnode});
+                }
+            }
+        }
+
+        cout << "Shortest path\n";
+        for (int i = 0; i < dist.size(); i++)
+        {
+            cout << dist[i] << " ";
+        }
+    }
+};
+
+int main()
+{
+
+    // selection_sort();
+
+    int nn, ne;
+    cout << "Enter the number of nodes in the graph\n";
+    cin >> nn;
+    cout << "Enter the number of edges in the graph\n";
+    cin >> ne;
+
+    Graph G(nn, ne);
+    G.acceptgraph();
+    G.display_graph();
+    G.djikstras();
+}
